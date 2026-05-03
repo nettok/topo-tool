@@ -174,3 +174,40 @@ def test_write_kml_creates_file(tmp_path: Path) -> None:
     content = out_path.read_text(encoding="utf-8")
     assert "P" in content
     assert "-10.0,20.0" in content
+
+
+def test_polygon_auto_closes_when_open() -> None:
+    feat = Feature(
+        name="Area",
+        type="polygon",
+        crs="EPSG:4326",
+        coords=((-89.6, 14.5), (-89.7, 14.5), (-89.7, 14.6)),
+    )
+    kml_doc = features_to_kml((feat,))
+    root = _parse(kml_doc.kml())
+
+    coords = root.find(".//kml:coordinates", _KML_NS)
+    assert coords is not None
+    assert coords.text is not None
+    parts = coords.text.split()
+    # Should have 4 entries: 3 original + first repeated
+    assert len(parts) == 4
+    assert parts[0] == parts[-1]
+
+
+def test_already_closed_polygon_not_duplicated() -> None:
+    feat = Feature(
+        name="Area",
+        type="polygon",
+        crs="EPSG:4326",
+        coords=((-89.6, 14.5), (-89.7, 14.5), (-89.7, 14.6), (-89.6, 14.5)),
+    )
+    kml_doc = features_to_kml((feat,))
+    root = _parse(kml_doc.kml())
+
+    coords = root.find(".//kml:coordinates", _KML_NS)
+    assert coords is not None
+    assert coords.text is not None
+    parts = coords.text.split()
+    # Should still have 4 entries, not 5
+    assert len(parts) == 4

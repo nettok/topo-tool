@@ -39,7 +39,10 @@ def _add_placemark(kml: simplekml.Kml, feat: Feature) -> None:
         placemark.coords = list(feat.coords)
     elif poly is not None:
         placemark = poly(name=feat.name)
-        placemark.outerboundaryis = list(feat.coords)
+        coords = list(feat.coords)
+        if coords[0] != coords[-1]:
+            coords.append(coords[0])
+        placemark.outerboundaryis = coords
 
     if placemark is None:
         raise ValueError(f"Unknown feature type: {feat.type}")
