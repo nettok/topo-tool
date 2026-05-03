@@ -14,3 +14,4 @@
 - **Layout**: `src/` layout (`src/topo_tool/`).
 - **CLI**: `cli.py` handles argument parsing only. All logic lives in library modules.
 - **Entry point**: declared in `pyproject.toml` as `topo-tool = "topo_tool.cli:main"`.
+- **Commits**: Never commit or push unless explicitly asked to do so.
