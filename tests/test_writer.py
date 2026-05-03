@@ -3,7 +3,8 @@ from __future__ import annotations
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-from topo_tool.models import Feature
+from topo_tool.converter import reproject_features
+from topo_tool.models import Feature, Projection
 from topo_tool.writer import features_to_kml, write_kml
 
 _KML_NS = {"kml": "http://www.opengis.net/kml/2.2"}
@@ -211,3 +212,34 @@ def test_already_closed_polygon_not_duplicated() -> None:
     parts = coords.text.split()
     # Should still have 4 entries, not 5
     assert len(parts) == 4
+
+
+def test_closed_polygon_stays_closed_after_reprojection() -> None:
+    """Verify that pyproj determinism preserves closure through reprojection."""
+    gtm_def = (
+        "+proj=tmerc +lat_0=0 +lon_0=-90.5 +k=0.9998 "
+        "+x_0=500000 +y_0=0 +datum=WGS84 +units=m"
+    )
+    proj = Projection(name="GTM", definition=gtm_def)
+    feat = Feature(
+        name="Area",
+        type="polygon",
+        crs="GTM",
+        coords=(
+            (496666, 1659194),
+            (497000, 1659194),
+            (497000, 1658800),
+            (496666, 1659194),  # closed: first == last
+        ),
+    )
+    reprojected = reproject_features((feat,), (proj,))
+    kml_doc = features_to_kml(reprojected)
+    root = _parse(kml_doc.kml())
+
+    coords = root.find(".//kml:coordinates", _KML_NS)
+    assert coords is not None
+    assert coords.text is not None
+    parts = coords.text.split()
+    # 4 original coords, no extra closure point appended
+    assert len(parts) == 4
+    assert parts[0] == parts[-1]
