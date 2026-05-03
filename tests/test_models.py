@@ -4,7 +4,7 @@ from dataclasses import FrozenInstanceError
 
 import pytest
 
-from topo_tool.models import Document, Feature, Projection
+from topo_tool.models import Document, Feature, Projection, Style
 
 
 def test_projection_creation() -> None:
@@ -59,3 +59,20 @@ def test_document_creation() -> None:
     assert len(doc.features) == 1
     assert doc.projections[0].name == "GTM"
     assert doc.features[0].name == "P"
+
+
+def test_style_creation() -> None:
+    style = Style(name="forest", color="#00ff00", opacity=0.30)
+    assert style.name == "forest"
+    assert style.color == "#00ff00"
+    assert style.opacity == 0.30
+
+
+def test_document_with_styles() -> None:
+    style = Style(name="forest", color="#00ff00", opacity=0.30)
+    feat = Feature(
+        name="P", type="point", crs="EPSG:4326", coords=((0, 0),)
+    )
+    doc = Document(styles=(style,), features=(feat,))
+    assert len(doc.styles) == 1
+    assert doc.styles[0].name == "forest"

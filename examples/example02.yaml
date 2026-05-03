@@ -1,3 +1,11 @@
+styles:
+  visitor_area:
+    color: "#ffaa00"
+    opacity: 0.25
+  access_road:
+    color: "#ff0000"
+    opacity: 1.0
+
 features:
   - name: "Viewpoint"
     type: point
@@ -8,6 +16,7 @@ features:
   - name: "Access Road"
     type: line
     crs: "EPSG:4326"
+    style: access_road
     coords:
       - [-90.5310, 15.0013]
       - [-90.5305, 15.0030]
@@ -16,6 +25,7 @@ features:
   - name: "Visitor Area"
     type: polygon
     crs: "EPSG:4326"
+    style: visitor_area
     coords:
       - [-90.5308, 15.0013]
       - [-90.5302, 15.0013]

@@ -129,3 +129,17 @@ def test_mixed_crs_features() -> None:
     lon, lat = result[1].coords[0]
     assert -91 < lon < -90
     assert 14 < lat < 16
+
+
+def test_reprojection_preserves_style() -> None:
+    proj = Projection(name="GTM", definition=_GTM_DEF)
+    feat = Feature(
+        name="Forest",
+        type="polygon",
+        crs="GTM",
+        coords=((496666, 1659194), (497000, 1659194), (497000, 1658800)),
+        style="protected_forest",
+    )
+    result = reproject_features((feat,), (proj,))
+    assert len(result) == 1
+    assert result[0].style == "protected_forest"

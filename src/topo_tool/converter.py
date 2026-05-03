@@ -78,4 +78,5 @@ def _reproject_one(
             (float(lon), float(lat)) for lon, lat in new_coords
         ),
         description=feat.description,
+        style=feat.style,
     )

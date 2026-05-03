@@ -287,3 +287,69 @@ def test_description_not_a_string_raises(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError, match="'description' must be a string"):
         load_document(filepath)
+
+
+# ── styles ────────────────────────────────────────────────────────────
+
+
+def test_parse_styles(tmp_path: Path) -> None:
+    data = {
+        "styles": {"forest": {"color": "#00ff00", "opacity": 0.30}},
+        "features": [],
+    }
+    filepath = tmp_path / "test.yaml"
+    _write_yaml(data, filepath)
+
+    doc = load_document(filepath)
+    assert len(doc.styles) == 1
+    assert doc.styles[0].name == "forest"
+    assert doc.styles[0].color == "#00ff00"
+    assert doc.styles[0].opacity == 0.30
+
+
+def test_invalid_color_raises(tmp_path: Path) -> None:
+    data = {
+        "styles": {"bad": {"color": "green", "opacity": 0.5}},
+        "features": [],
+    }
+    filepath = tmp_path / "test.yaml"
+    _write_yaml(data, filepath)
+
+    with pytest.raises(ValueError, match="'color' must be a hex RGB"):
+        load_document(filepath)
+
+
+def test_invalid_opacity_raises(tmp_path: Path) -> None:
+    data = {
+        "styles": {"bad": {"color": "#00ff00", "opacity": 1.5}},
+        "features": [],
+    }
+    filepath = tmp_path / "test.yaml"
+    _write_yaml(data, filepath)
+
+    with pytest.raises(ValueError, match="must be between 0.0 and 1.0"):
+        load_document(filepath)
+
+
+def test_style_used_by_feature(tmp_path: Path) -> None:
+    data = {
+        "styles": {"forest": {"color": "#00ff00", "opacity": 0.30}},
+        "features": [{"name": "X", "type": "point", "crs": "EPSG:4326", "coords": [0, 0], "style": "forest"}],
+    }
+    filepath = tmp_path / "test.yaml"
+    _write_yaml(data, filepath)
+
+    doc = load_document(filepath)
+    assert doc.features[0].style == "forest"
+
+
+def test_undefined_style_raises(tmp_path: Path) -> None:
+    data = {
+        "styles": {},
+        "features": [{"name": "X", "type": "point", "crs": "EPSG:4326", "coords": [0, 0], "style": "missing"}],
+    }
+    filepath = tmp_path / "test.yaml"
+    _write_yaml(data, filepath)
+
+    with pytest.raises(ValueError, match="style 'missing' is not defined"):
+        load_document(filepath)

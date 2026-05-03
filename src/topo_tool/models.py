@@ -7,6 +7,19 @@ ShapeType = Literal["point", "polygon", "line"]
 
 
 @dataclass(frozen=True)
+class Style:
+    """A named visual style for features.
+
+    ``color`` is a hex RGB string (e.g. ``#00ff00``).
+    ``opacity`` is a float in 0.0–1.0.
+    """
+
+    name: str
+    color: str
+    opacity: float
+
+
+@dataclass(frozen=True)
 class Projection:
     """A named coordinate reference system definition.
 
@@ -26,6 +39,10 @@ class Feature:
 
     ``crs`` references a projection name defined in the YAML
     ``projections`` section, or a built-in ``EPSG:xxxx`` code.
+
+    ``style`` optionally references a named style from the
+    ``styles`` section. If omitted, polygons get a default
+    (white fill at 50% opacity) and lines/points are unstyled.
     """
 
     name: str
@@ -33,11 +50,13 @@ class Feature:
     crs: str
     coords: tuple[tuple[float, float], ...]
     description: str | None = None
+    style: str | None = None
 
 
 @dataclass(frozen=True)
 class Document:
-    """A complete input document: custom projections + features."""
+    """A complete input document: styles, projections + features."""
 
-    projections: tuple[Projection, ...]
-    features: tuple[Feature, ...]
+    styles: tuple[Style, ...] = ()
+    projections: tuple[Projection, ...] = ()
+    features: tuple[Feature, ...] = ()

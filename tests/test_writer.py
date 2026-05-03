@@ -4,8 +4,8 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from topo_tool.converter import reproject_features
-from topo_tool.models import Feature, Projection
-from topo_tool.writer import features_to_kml, write_kml
+from topo_tool.models import Feature, Projection, Style
+from topo_tool.writer import features_to_kml, write_kml, _to_kml_color
 
 _KML_NS = {"kml": "http://www.opengis.net/kml/2.2"}
 
@@ -243,3 +243,71 @@ def test_closed_polygon_stays_closed_after_reprojection() -> None:
     # 4 original coords, no extra closure point appended
     assert len(parts) == 4
     assert parts[0] == parts[-1]
+
+
+def test_to_kml_color_conversion() -> None:
+    assert _to_kml_color("#00ff00", 1.0) == "ff00ff00"
+    assert _to_kml_color("#00ff00", 0.30) == "4d00ff00"
+    assert _to_kml_color("#ffffff", 0.25) == "40ffffff"
+    assert _to_kml_color("#ff0000", 1.0) == "ff0000ff"
+
+
+def test_styled_polygon_has_kml_style() -> None:
+    style = Style(name="forest", color="#00ff00", opacity=0.30)
+    feat = Feature(
+        name="Area",
+        type="polygon",
+        crs="EPSG:4326",
+        coords=((-89.6, 14.5), (-89.7, 14.5), (-89.7, 14.6)),
+        style="forest",
+    )
+    kml_doc = features_to_kml((feat,), (style,))
+    root = _parse(kml_doc.kml())
+
+    polystyle = root.find(".//kml:PolyStyle", _KML_NS)
+    assert polystyle is not None
+    color = polystyle.find("kml:color", _KML_NS)
+    assert color is not None
+    assert color.text == "4d00ff00"
+
+    linestyle = root.find(".//kml:LineStyle", _KML_NS)
+    assert linestyle is not None
+    outline_color = linestyle.find("kml:color", _KML_NS)
+    assert outline_color is not None
+    assert outline_color.text == "ff00ff00"
+
+
+def test_unstyled_polygon_gets_default_style() -> None:
+    feat = Feature(
+        name="Area",
+        type="polygon",
+        crs="EPSG:4326",
+        coords=((-89.6, 14.5), (-89.7, 14.5), (-89.7, 14.6)),
+    )
+    kml_doc = features_to_kml((feat,))
+    root = _parse(kml_doc.kml())
+
+    polystyle = root.find(".//kml:PolyStyle", _KML_NS)
+    assert polystyle is not None
+    color = polystyle.find("kml:color", _KML_NS)
+    assert color is not None
+    assert color.text == "80ffffff"
+
+
+def test_styled_line_has_kml_color() -> None:
+    style = Style(name="road", color="#ff0000", opacity=1.0)
+    feat = Feature(
+        name="Trail",
+        type="line",
+        crs="EPSG:4326",
+        coords=((-89.6, 14.5), (-89.7, 14.6)),
+        style="road",
+    )
+    kml_doc = features_to_kml((feat,), (style,))
+    root = _parse(kml_doc.kml())
+
+    linestyle = root.find(".//kml:LineStyle", _KML_NS)
+    assert linestyle is not None
+    color = linestyle.find("kml:color", _KML_NS)
+    assert color is not None
+    assert color.text == "ff0000ff"

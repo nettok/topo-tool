@@ -37,7 +37,7 @@ def main(argv: list[str] | None = None) -> None:
     try:
         doc = load_document(args.input)
         features = reproject_features(doc.features, doc.projections)
-        kml = features_to_kml(features)
+        kml = features_to_kml(features, doc.styles)
         write_kml(args.output, kml)
     except (ValueError, yaml.YAMLError) as e:
         print(f"Error: {e}", file=sys.stderr)

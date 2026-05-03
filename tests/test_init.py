@@ -10,5 +10,5 @@ def test_import_star_includes_all_public_names() -> None:
 
 
 def test_all_names_are_correct() -> None:
-    expected = {"Document", "Feature", "Projection", "load_document", "features_to_kml", "write_kml"}
+    expected = {"Document", "Feature", "Projection", "Style", "load_document", "features_to_kml", "write_kml"}
     assert set(topo_tool.__all__) == expected

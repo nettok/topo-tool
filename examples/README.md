@@ -4,8 +4,8 @@
 
 A mountain property with three features in GTM (Guatemala Transverse Mercator) projection:
 
-- **Property Boundary** — polygon (8 vertices)
-- **Protected Forest** — polygon (18 vertices)
+- **Property Boundary** — polygon (8 vertices), white fill at 25%
+- **Protected Forest** — polygon (18 vertices), green fill at 30%
 - **Rótulo de Área Protegida** — point (protected area sign)
 
 ### Convert to KML
@@ -24,8 +24,8 @@ Import the `.kml` file into Avenza or any KML-compatible mapping app.
 A simple example using standard WGS84 coordinates (EPSG:4326) — no custom projection needed.
 
 - **Viewpoint** — point
-- **Access Road** — line
-- **Visitor Area** — polygon
+- **Access Road** — line (red)
+- **Visitor Area** — polygon (orange fill at 25%)
 
 ### Convert to KML
 

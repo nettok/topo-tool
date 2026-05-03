@@ -21,6 +21,11 @@ topo-tool input.yaml -o output.kml
 ### YAML format
 
 ```yaml
+styles:
+  protected_forest:
+    color: "#00ff00"  # hex RGB
+    opacity: 0.30     # 0.0–1.0
+
 projections:
   GTM: "+proj=tmerc +lat_0=0 +lon_0=-90.5 +k=0.9998 +x_0=500000 +y_0=0 +datum=WGS84 +units=m"
 
@@ -33,6 +38,7 @@ features:
   - name: "Trail"
     type: line
     crs: GTM
+    style: access_road
     coords:
       - [496800, 1659194]
       - [496850, 1659050]
@@ -40,6 +46,7 @@ features:
   - name: "Property Boundary"
     type: polygon
     crs: GTM
+    style: property_boundary
     coords:
       - [496666, 1659194]
       - [497000, 1659194]
@@ -53,6 +60,15 @@ features:
 | `crs` | yes | Projection name from `projections`, or `EPSG:xxxx` |
 | `coords` | yes | `[x, y]` for point; list of pairs for polygon/line |
 | `description` | no | Becomes KML Placemark description |
+| `style` | no | References a named style from `styles` (polygons and lines) |
+
+### Styles
+
+Define named visual styles in the `styles` section. Each style has a hex RGB `color` and `opacity` (0.0–1.0). Reference them in features with `style: name`.
+
+For polygons, the color applies to both fill and outline. Fill opacity is set via the style; the outline is always at full opacity. Un-styled polygons default to white fill at 50% opacity.
+
+Lines use the style color for the stroke only (opacity is ignored, always full).
 
 ### Projections
 
