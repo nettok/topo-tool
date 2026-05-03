@@ -4,6 +4,8 @@ import argparse
 import sys
 from pathlib import Path
 
+import yaml
+
 from topo_tool.converter import reproject_features
 from topo_tool.reader import load_document
 from topo_tool.writer import features_to_kml, write_kml
@@ -37,7 +39,7 @@ def main(argv: list[str] | None = None) -> None:
         features = reproject_features(doc.features, doc.projections)
         kml = features_to_kml(features)
         write_kml(args.output, kml)
-    except ValueError as e:
+    except (ValueError, yaml.YAMLError) as e:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
 

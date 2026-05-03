@@ -114,4 +114,5 @@ YAML file  →  reader.load_document  →  converter.reproject_features  →  wr
 |-------|--------------------------------------------|--------|
 | 1     | YAML → KML with custom projections         | done   |
 | 2     | KML → CSV/GeoJSON (bidirectional)          | planned |
-| 3     | Style options (colors, line width, icons)  | planned |
+| 3     | Elevation (Z-axis) support                 | planned |
+| 4     | Style options (colors, line width, icons)  | planned |

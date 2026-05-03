@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import cast
 
 import yaml
 
@@ -65,7 +66,7 @@ def _parse_feature(data: object) -> Feature:
 
     return Feature(
         name=name,
-        type=ftype,  # type: ignore[arg-type]
+        type=cast(ShapeType, ftype),
         crs=crs,
         coords=coords,
         description=description,

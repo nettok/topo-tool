@@ -46,3 +46,12 @@ def test_invalid_yaml_shows_clean_error(tmp_path: Path) -> None:
     with pytest.raises(SystemExit) as exc:
         main([str(infile)])
     assert exc.value.code == 1
+
+
+def test_malformed_yaml_shows_clean_error(tmp_path: Path) -> None:
+    infile = tmp_path / "bad.yaml"
+    infile.write_text("features:\n\tbad: indentation", encoding="utf-8")
+
+    with pytest.raises(SystemExit) as exc:
+        main([str(infile)])
+    assert exc.value.code == 1
