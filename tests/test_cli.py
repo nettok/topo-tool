@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+import yaml
 
 from topo_tool.cli import main
 
@@ -14,8 +15,6 @@ def test_missing_input_file(tmp_path: Path) -> None:
 
 
 def test_valid_conversion(tmp_path: Path) -> None:
-    import yaml
-
     data = {
         "features": [
             {"name": "P", "type": "point", "crs": "EPSG:4326", "coords": [0, 0]}
@@ -35,9 +34,6 @@ def test_valid_conversion(tmp_path: Path) -> None:
 
 
 def test_invalid_yaml_shows_clean_error(tmp_path: Path) -> None:
-    import yaml
-    from pathlib import Path
-
     data = {
         "features": [
             {"type": "point", "crs": "EPSG:4326", "coords": [0, 0]}

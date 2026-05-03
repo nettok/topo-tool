@@ -72,9 +72,9 @@ def _reproject_one(
 
     return Feature(
         name=feat.name,
-        type=feat.type,  # type: ignore[arg-type]
+        type=feat.type,
         crs="EPSG:4326",
-        coords=tuple(  # type: ignore[arg-type]
+        coords=tuple(
             (float(lon), float(lat)) for lon, lat in new_coords
         ),
         description=feat.description,
