@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from dataclasses import FrozenInstanceError
+
 import pytest
 
 from topo_tool.models import Document, Feature, Projection
@@ -43,7 +45,7 @@ def test_feature_is_frozen() -> None:
         crs="EPSG:4326",
         coords=((-89.6, 14.5),),
     )
-    with pytest.raises(Exception):
+    with pytest.raises(FrozenInstanceError):
         feat.name = "Changed"
 
 

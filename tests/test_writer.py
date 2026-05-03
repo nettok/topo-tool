@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import xml.etree.ElementTree as ET
+from pathlib import Path
 
 from topo_tool.models import Feature
-from topo_tool.writer import features_to_kml
+from topo_tool.writer import features_to_kml, write_kml
 
 _KML_NS = {"kml": "http://www.opengis.net/kml/2.2"}
 
@@ -141,3 +142,35 @@ def test_empty_features_produces_document() -> None:
 
     doc = root.find("kml:Document", _KML_NS)
     assert doc is not None
+
+
+def test_blank_description_treated_as_no_description() -> None:
+    feat = Feature(
+        name="Sign",
+        type="point",
+        crs="EPSG:4326",
+        coords=((-89.6, 14.5),),
+        description="",
+    )
+    kml_doc = features_to_kml((feat,))
+    root = _parse(kml_doc.kml())
+
+    placemark = root.find(".//kml:Placemark", _KML_NS)
+    assert placemark is not None
+    desc = placemark.find("kml:description", _KML_NS)
+    assert desc is None
+
+
+def test_write_kml_creates_file(tmp_path: Path) -> None:
+    feat = Feature(
+        name="P", type="point", crs="EPSG:4326", coords=((-10.0, 20.0),)
+    )
+    kml = features_to_kml((feat,))
+    out_path = tmp_path / "output.kml"
+
+    write_kml(out_path, kml)
+
+    assert out_path.exists()
+    content = out_path.read_text(encoding="utf-8")
+    assert "P" in content
+    assert "-10.0,20.0" in content

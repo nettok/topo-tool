@@ -18,3 +18,19 @@ The GTM projection is defined inline as a PROJ string in the YAML `projections` 
 Coordinates are automatically reprojected to WGS84 on output, as required by KML.
 
 Import the `.kml` file into Avenza or any KML-compatible mapping app.
+
+## `example02.yaml`
+
+A simple example using standard WGS84 coordinates (EPSG:4326) — no custom projection needed.
+
+- **Viewpoint** — point
+- **Access Road** — line
+- **Visitor Area** — polygon
+
+### Convert to KML
+
+```
+topo-tool examples/example02.yaml -o visitors.kml
+```
+
+When features are already in WGS84, reprojection is a no-op.

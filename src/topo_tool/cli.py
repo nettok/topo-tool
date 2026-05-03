@@ -32,10 +32,15 @@ def main(argv: list[str] | None = None) -> None:
         print(f"Error: input file not found: {args.input}", file=sys.stderr)
         sys.exit(1)
 
-    doc = load_document(args.input)
-    features = reproject_features(doc.features, doc.projections)
-    kml = features_to_kml(features)
-    write_kml(args.output, kml)
+    try:
+        doc = load_document(args.input)
+        features = reproject_features(doc.features, doc.projections)
+        kml = features_to_kml(features)
+        write_kml(args.output, kml)
+    except ValueError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
+
     print(f"Written {len(features)} feature(s) to {args.output}")
 
 

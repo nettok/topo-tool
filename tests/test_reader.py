@@ -265,3 +265,25 @@ def test_feature_not_a_mapping(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError, match="Each feature must be a mapping"):
         load_document(filepath)
+
+
+def test_features_not_a_list_raises(tmp_path: Path) -> None:
+    data = {"features": "not a list"}
+    filepath = tmp_path / "test.yaml"
+    _write_yaml(data, filepath)
+
+    with pytest.raises(ValueError, match="'features' must be a list"):
+        load_document(filepath)
+
+
+def test_description_not_a_string_raises(tmp_path: Path) -> None:
+    data = {
+        "features": [
+            {"name": "X", "type": "point", "crs": "EPSG:4326", "coords": [0, 0], "description": 123}
+        ]
+    }
+    filepath = tmp_path / "test.yaml"
+    _write_yaml(data, filepath)
+
+    with pytest.raises(ValueError, match="'description' must be a string"):
+        load_document(filepath)

@@ -1,0 +1,23 @@
+features:
+  - name: "Viewpoint"
+    type: point
+    crs: "EPSG:4326"
+    coords: [-90.5300, 15.0048]
+    description: "Scenic overlook."
+
+  - name: "Access Road"
+    type: line
+    crs: "EPSG:4326"
+    coords:
+      - [-90.5310, 15.0013]
+      - [-90.5305, 15.0030]
+      - [-90.5300, 15.0048]
+
+  - name: "Visitor Area"
+    type: polygon
+    crs: "EPSG:4326"
+    coords:
+      - [-90.5308, 15.0013]
+      - [-90.5302, 15.0013]
+      - [-90.5302, 15.0020]
+      - [-90.5308, 15.0020]

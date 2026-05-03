@@ -14,6 +14,8 @@ def load_document(path: Path) -> Document:
     raw = _read_yaml(path)
     projections = _parse_projections(raw.get("projections", {}))
     features_data = raw.get("features", [])
+    if not isinstance(features_data, list):
+        raise ValueError("'features' must be a list")
     features = tuple(_parse_feature(fd) for fd in features_data)
     return Document(projections=projections, features=features)
 
@@ -56,12 +58,17 @@ def _parse_feature(data: object) -> Feature:
 
     coords = _normalize_coords(ftype, coords_raw, name)
 
+    if description is not None and not isinstance(description, str):
+        raise ValueError(
+            f"Feature '{name}': 'description' must be a string, got {type(description).__name__}"
+        )
+
     return Feature(
         name=name,
         type=ftype,  # type: ignore[arg-type]
         crs=crs,
         coords=coords,
-        description=str(description) if description is not None else None,
+        description=description,
     )
 
 

@@ -99,3 +99,33 @@ def test_invalid_crs_definition_raises() -> None:
     )
     with pytest.raises(ValueError, match="invalid CRS definition"):
         reproject_features((feat,), (proj,))
+
+
+def test_duplicate_projection_names_raises() -> None:
+    proj1 = Projection(name="GTM", definition=_GTM_DEF)
+    proj2 = Projection(name="GTM", definition="+proj=latlong")
+    feat = Feature(
+        name="X", type="point", crs="GTM", coords=((0, 0),)
+    )
+    with pytest.raises(ValueError, match="Duplicate projection name 'GTM'"):
+        reproject_features((feat,), (proj1, proj2))
+
+
+def test_mixed_crs_features() -> None:
+    """Some features are already WGS84, others need reprojection."""
+    proj = Projection(name="GTM", definition=_GTM_DEF)
+    wgs84_feat = Feature(
+        name="WGS84 Point", type="point", crs="EPSG:4326", coords=((-89.6, 14.5),)
+    )
+    gtm_feat = Feature(
+        name="GTM Point", type="point", crs="GTM", coords=((496666, 1659194),)
+    )
+    result = reproject_features((wgs84_feat, gtm_feat), (proj,))
+    assert len(result) == 2
+    # WGS84 feature passes through unchanged (same coords)
+    assert result[0].coords == wgs84_feat.coords
+    # GTM feature is reprojected
+    assert result[1].crs == "EPSG:4326"
+    lon, lat = result[1].coords[0]
+    assert -91 < lon < -90
+    assert 14 < lat < 16

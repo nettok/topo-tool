@@ -18,12 +18,26 @@ def reproject_features(
     ``projections`` maps custom CRS names (e.g. ``GTM``) to PROJ strings.
     Built-in EPSG codes are resolved directly by pyproj.
     """
-    proj_map = {p.name: p.definition for p in projections}
+    proj_map = _build_projection_map(projections)
 
     reprojected: list[Feature] = []
     for feat in features:
         reprojected.append(_reproject_one(feat, proj_map))
     return tuple(reprojected)
+
+
+def _build_projection_map(
+    projections: tuple[Projection, ...],
+) -> dict[str, str]:
+    proj_map: dict[str, str] = {}
+    for p in projections:
+        if p.name in proj_map:
+            raise ValueError(
+                f"Duplicate projection name '{p.name}'. "
+                "Each projection must have a unique name."
+            )
+        proj_map[p.name] = p.definition
+    return proj_map
 
 
 def _reproject_one(
